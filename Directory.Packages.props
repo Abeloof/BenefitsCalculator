@@ -6,8 +6,15 @@
     <ApiVersioningVersion>8.1.0</ApiVersioningVersion>
     <SwashbuckleVersion>8.1.2</SwashbuckleVersion>
   </PropertyGroup>
-  <ItemGroup> 
+  <ItemGroup>
+    <PackageVersion Include="MediatR" Version="12.5.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspnetVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageVersion>
+    <PackageVersion Include="Npgsql" Version="9.0.3" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleVersion)" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="$(SwashbuckleVersion)" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />

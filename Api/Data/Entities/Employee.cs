@@ -1,4 +1,4 @@
-﻿namespace Api.Models;
+﻿namespace Api.Data.Entities;
 
 public class Employee
 {

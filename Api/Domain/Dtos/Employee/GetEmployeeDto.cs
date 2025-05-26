@@ -1,8 +1,9 @@
-﻿using Api.Dtos.Dependent;
+﻿using Api.Domain.Dtos.Dependent;
+using MediatR;
 
-namespace Api.Dtos.Employee;
+namespace Api.Domain.Dtos.Employee;
 
-public class GetEmployeeDto
+public class GetEmployeeDto : IRequest
 {
     public int Id { get; set; }
     public string? FirstName { get; set; }

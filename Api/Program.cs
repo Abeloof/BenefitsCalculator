@@ -1,3 +1,4 @@
+using Api.Data;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy(allowLocalhost,
         policy => { policy.WithOrigins("http://localhost:3000", "http://localhost"); });
 });
+
+
+builder.AddNpgsqlDbContext<EmployeesDbContext>();
+builder.Services.AddMigration<EmployeesDbContext, EmployeesContextSeed>();
 
 var app = builder.Build();
 

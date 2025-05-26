@@ -1,6 +1,6 @@
-﻿using Api.Models;
+﻿using Api.Domain.Models;
 
-namespace Api.Dtos.Dependent;
+namespace Api.Domain.Dtos.Dependent;
 
 public class GetDependentDto
 {

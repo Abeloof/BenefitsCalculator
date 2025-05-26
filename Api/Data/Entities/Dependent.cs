@@ -1,4 +1,6 @@
-﻿namespace Api.Models;
+﻿using Api.Domain.Models;
+
+namespace Api.Data.Entities;
 
 public class Dependent
 {
