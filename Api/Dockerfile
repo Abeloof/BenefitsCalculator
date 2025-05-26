@@ -8,7 +8,7 @@ RUN dotnet restore
 RUN dotnet publish -c release -o ../app -r linux-x64 --self-contained false --no-restore
 
 # final stage/image
-FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim AS runner
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0 AS runner
 WORKDIR /app
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "run"]
