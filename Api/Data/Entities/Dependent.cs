@@ -1,10 +1,10 @@
-﻿using Api.Domain.Models;
+﻿using Api.Domain;
+using Api.Domain.Models;
 
 namespace Api.Data.Entities;
 
-public class Dependent
+public class Dependent : BaseEntity
 {
-    public int Id { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public DateTime DateOfBirth { get; set; }

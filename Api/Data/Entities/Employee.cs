@@ -1,8 +1,9 @@
-﻿namespace Api.Data.Entities;
+﻿using Api.Domain;
 
-public class Employee
+namespace Api.Data.Entities;
+
+public class Employee : BaseEntity
 {
-    public int Id { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public decimal Salary { get; set; }

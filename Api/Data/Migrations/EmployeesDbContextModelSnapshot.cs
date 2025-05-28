@@ -48,6 +48,8 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmployeeId");
+
                     b.ToTable("Dependents", (string)null);
                 });
 
@@ -56,6 +58,8 @@ namespace Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("date");
@@ -74,48 +78,20 @@ namespace Data.Migrations
                     b.ToTable("Employees", (string)null);
                 });
 
-            modelBuilder.Entity("DependentEmployee", b =>
+            modelBuilder.Entity("Api.Data.Entities.Dependent", b =>
                 {
-                    b.Property<int>("DependentsId")
-                        .HasColumnType("integer");
+                    b.HasOne("Api.Data.Entities.Employee", "Employee")
+                        .WithMany("Dependents")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("Employee1Id")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DependentsId", "Employee1Id");
-
-                    b.HasIndex("Employee1Id");
-
-                    b.ToTable("DependentEmployee");
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Api.Data.Entities.Employee", b =>
                 {
-                    b.HasOne("Api.Data.Entities.Dependent", null)
-                        .WithOne("Employee")
-                        .HasForeignKey("Api.Data.Entities.Employee", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DependentEmployee", b =>
-                {
-                    b.HasOne("Api.Data.Entities.Dependent", null)
-                        .WithMany()
-                        .HasForeignKey("DependentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Data.Entities.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("Employee1Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Api.Data.Entities.Dependent", b =>
-                {
-                    b.Navigation("Employee");
+                    b.Navigation("Dependents");
                 });
 #pragma warning restore 612, 618
         }

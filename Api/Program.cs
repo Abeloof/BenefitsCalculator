@@ -1,4 +1,10 @@
 using Api.Data;
+using Api.Data.Entities;
+using Api.Data.Repository;
+using Api.Domain;
+using Api.Domain.DomainServices;
+using Api.Domain.DomainServices.Deductions;
+using Api.Domain.Interfaces;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +35,16 @@ builder.Services.AddCors(options =>
 
 builder.AddNpgsqlDbContext<EmployeesDbContext>();
 builder.Services.AddMigration<EmployeesDbContext, EmployeesContextSeed>();
-
+builder.Services.AddScoped<IRepository<Employee>, EmployeesRepository>();
+builder.Services.AddTransient<IEmployeesService, EmployeesService>();
+builder.Services.Configure<EarningsOptions>(
+    builder.Configuration.GetSection(EarningsOptions.Earnings)
+);
+builder.Services.AddTransient<IEarningsCalculator, EarningsCalulator>();
+builder.Services.AddTransient<IEarningPeriodDeduction, DependentsDeduction>();
+builder.Services.AddTransient<IEarningPeriodDeduction, DependentsOver50Deduction>();
+builder.Services.AddTransient<IEarningPeriodDeduction, EmployedDeduction>();
+builder.Services.AddTransient<IEarningPeriodDeduction, SalaryBasedDeduction>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

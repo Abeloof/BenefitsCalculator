@@ -18,7 +18,9 @@ class EmployeesEntityTypeConfiguration : IEntityTypeConfiguration<Employee>
             .HasColumnType("numeric(10,2)");
         b.Property(p => p.DateOfBirth)
             .HasColumnType("date");
-        b.HasMany(p => p.Dependents).WithMany();
+        b.HasMany(p => p.Dependents)
+            .WithOne(e => e.Employee)
+            .HasForeignKey(e => e.EmployeeId);
         b.Navigation(p => p.Dependents);
         b.HasKey("Id");
         b.ToTable("Employees");
