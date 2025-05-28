@@ -3,12 +3,15 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # copy csproj and restore as distinct layers
-COPY . .
+COPY ../Api .
+COPY ../Directory.Packages.props .
 RUN dotnet restore
-RUN dotnet publish -c release -o ../app -r linux-x64 --self-contained false --no-restore
+RUN dotnet publish -c release -o ../app --self-contained false --no-restore
 
-# final stage/image
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0 AS runner
+# # final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:9.0.5-bookworm-slim AS runner
 WORKDIR /app
-COPY --from=build /app ./
-ENTRYPOINT ["dotnet", "run"]
+COPY --from=build /app .
+EXPOSE 3000
+ENTRYPOINT ["dotnet", "./Api.dll"]
+#CMD [ "/bin/bash" ]
