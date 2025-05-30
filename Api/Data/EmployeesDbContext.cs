@@ -7,6 +7,7 @@ namespace Api.Data;
 /// init migrations: dotnet ef migrations add --context EmployeesDbContext initial -n Data.Migrations
 public class EmployeesDbContext(DbContextOptions<EmployeesDbContext> options) : DbContext(options)
 {
+    public const string ConnectionStringName = "EmployeesDB";
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Dependent> Dependents { get; set; }
 

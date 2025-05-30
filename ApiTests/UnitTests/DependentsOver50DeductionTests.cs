@@ -11,8 +11,9 @@ namespace ApiTests.UnitTests;
 public class DependentsOver50DeductionTests
 {
     private readonly IOptions<EarningsOptions> _options;
+    private readonly TimeProvider _timeProvider;
     private readonly GetEmployeeDto _employee;
-    
+
     public DependentsOver50DeductionTests()
     {
         _options = Substitute.For<IOptions<EarningsOptions>>();
@@ -30,7 +31,8 @@ public class DependentsOver50DeductionTests
                     DateOfBirth = new DateTime(1950, 01, 01),
                 }
             }
-        };        
+        };
+        _timeProvider = TimeProvider.System;
     }
     
     [Fact]
@@ -43,7 +45,7 @@ public class DependentsOver50DeductionTests
                 DateOfBirth = DateTime.Today.Subtract(TimeSpan.FromDays(365*8))
             }
         };
-        var classUDT = new DependentsOver50Deduction(_options!);
+        var classUDT = new DependentsOver50Deduction(_options!, _timeProvider);
         var result = classUDT.IsDeductable(_employee);
         Assert.False(result);
     }
@@ -51,7 +53,7 @@ public class DependentsOver50DeductionTests
     [Fact]
     public void DependentsOver50Deduction_IsDeductable_ReturnsTrue()
     {
-        var classUDT = new DependentsOver50Deduction(_options!);
+        var classUDT = new DependentsOver50Deduction(_options!, _timeProvider);
         var result = classUDT.IsDeductable(_employee);
         Assert.True(result);
     }
@@ -59,10 +61,10 @@ public class DependentsOver50DeductionTests
     [Fact]
     public void DependentsOver50Deduction_RetrieveDeduction_Returns_CorrecResult()
     {
-        var classUDT = new DependentsOver50Deduction(_options!);
+        var classUDT = new DependentsOver50Deduction(_options!, _timeProvider);
         var expected = new EarningPeriodDeductionDto()
         {
-            Amount = Math.Round(((_options!.Value.Deductions.DependentOver50CostPerMonth * 12m) / _options.Value.PayPeriodsPerYear), 
+            Amount = Math.Round(_options!.Value.Deductions.DependentOver50CostPerMonth * 12m / _options.Value.PayPeriodsPerYear, 
                 2, MidpointRounding.AwayFromZero) * _employee.Dependents.Count,
             Description = $"{_employee.Dependents.Count} employee dependents over age 50 years."
         };

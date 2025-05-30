@@ -4,9 +4,9 @@ namespace Api.Data;
 
 public static class Extensions
 {
-    public static void AddNpgsqlDbContext<TContext>(this IHostApplicationBuilder builder) where TContext : DbContext
+    public static void AddNpgsqlDbContext<TContext>(this IHostApplicationBuilder builder, string connectionStringName) where TContext : DbContext
     {
-        var connectionString = builder.Configuration.GetConnectionString("EmployeesDB");
+        var connectionString = builder.Configuration.GetConnectionString(connectionStringName);
         builder.Services.AddDbContextPool<TContext>(builder =>
         {
             builder.UseNpgsql(connectionString, npSql =>
@@ -18,8 +18,8 @@ public static class Extensions
     }
 
     public static IServiceCollection AddMigration<TContext, TDbSeeder>(this IServiceCollection services)
-    where TContext : EmployeesDbContext
-    where TDbSeeder : EmployeesContextSeed
+    where TContext : DbContext
+    where TDbSeeder : class, IDbSeeder<TContext>
     {
         services.AddScoped<TDbSeeder>();
         services.AddHostedService<EmployeesContextMigrationHostedService<TContext, TDbSeeder>>();
@@ -29,8 +29,8 @@ public static class Extensions
 
 
 public class EmployeesContextMigrationHostedService<TContext, TDbSeeder>(IServiceProvider serviceProvider, IWebHostEnvironment env)
-    : BackgroundService where TContext : EmployeesDbContext
-                        where TDbSeeder : EmployeesContextSeed
+    : BackgroundService where TContext : DbContext
+                        where TDbSeeder : class, IDbSeeder<TContext>
 {
     public override async Task StartAsync(CancellationToken cancellationToken)
     {

@@ -33,13 +33,14 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.AddNpgsqlDbContext<EmployeesDbContext>();
+builder.AddNpgsqlDbContext<EmployeesDbContext>(EmployeesDbContext.ConnectionStringName);
 builder.Services.AddMigration<EmployeesDbContext, EmployeesContextSeed>();
 builder.Services.AddScoped<IRepository<Employee>, EmployeesRepository>();
 builder.Services.AddTransient<IEmployeesService, EmployeesService>();
 builder.Services.Configure<EarningsOptions>(
     builder.Configuration.GetSection(EarningsOptions.Earnings)
 );
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddTransient<IEarningsCalculator, EarningsCalulator>();
 builder.Services.AddTransient<IEarningPeriodDeduction, DependentsDeduction>();
 builder.Services.AddTransient<IEarningPeriodDeduction, DependentsOver50Deduction>();

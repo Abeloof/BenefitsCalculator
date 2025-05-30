@@ -5,13 +5,13 @@ using Microsoft.Extensions.Options;
 
 namespace Api.Domain.DomainServices.Deductions;
 
-public class DependentsOver50Deduction(IOptions<EarningsOptions> options) : IEarningPeriodDeduction
+public class DependentsOver50Deduction(IOptions<EarningsOptions> options, TimeProvider currentTimeProvider) : IEarningPeriodDeduction
 {
-    private const int DaysInAYear = 365;
+    private int DaysInAYear = DateTime.IsLeapYear(currentTimeProvider.GetLocalNow().Year) ? 366 : 365;
     private const int Age = 50;
     private const string Description = "{0} employee dependents over age {1} years.";
 
-    protected DateTime Over50BirthDateTime => DateTime.Now.Subtract(TimeSpan.FromDays(DaysInAYear * Age)); // leap years ?
+    protected DateTime Over50BirthDateTime => DateTime.Now.Subtract(TimeSpan.FromDays(DaysInAYear * Age));
 
     protected decimal DependentOver50CostPerMonth => options.Value.Deductions.DependentOver50CostPerMonth;
 
