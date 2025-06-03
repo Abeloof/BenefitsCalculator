@@ -6,12 +6,16 @@
     "service": "app",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"hostRequirements": {
-		"cpus": 2,
-		"memory": "8gb"
+		"cpus": 1,
+		"memory": "4gb"
 	},
 	"mounts": [ 
-		//"source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind",
-		"source=${env:HOME}${env:USERPROFILE}/.nuget,target=/home/vscode/.nuget,type=bind"
+		"source=${env:HOME}${env:USERPROFILE}/.dotnet/symbolcache,target=/home/vscode/.dotnet/symbolcache,type=bind,rw",
+		"source=${env:HOME}${env:USERPROFILE}/.nuget,target=/home/vscode/.nuget,type=bind,rw",
+		"source=${env:HOME}${env:USERPROFILE}/.bash_history,target=/home/vscode/.bash_history,type=bind,rw",
+		"source=${env:HOME}${env:USERPROFILE}/.bashrc,target=/home/vscode/.bashrc,type=bind,rw",
+		"source=${env:HOME}${env:USERPROFILE}/.vscode-server,target=/home/vscode/.vscode-server,type=bind,rw",
+		"source=${env:HOME}${env:USERPROFILE}/vscode-server,target=/vscode/vscode-server,type=bind,rw"
 	],
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -41,12 +45,17 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [5000, 5001, 5432],
+	"forwardPorts": [3000, 7058, 5432],
 	"portsAttributes": {
-			"5001": {
+			"7058": {
 				"protocol": "https"
+			},
+			"3000": {
+				"protocol": "http"
 			}
 	},
+	// TODO: below line could be revised
+	"onCreateCommand": "sudo chown -R vscode:users /vscode/vscode-server && sudo  chmod -R g+rw /vscode/vscode-server && sudo chown -R vscode:users /home/vscode && sudo chmod -R g+rw,u+rw /home/vscode",
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "dotnet dev-certs https --trust && dotnet tool install -g dotnet-ef"
 
