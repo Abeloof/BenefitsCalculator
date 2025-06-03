@@ -1,8 +1,9 @@
+using Api.Data.Entities;
 using Api.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Data.Entities.EntityConfigurations;
+namespace Api.Data.EntityConfigurations;
 
 public class DependentsEntityTypeConfiguration : IEntityTypeConfiguration<Dependent>
 {

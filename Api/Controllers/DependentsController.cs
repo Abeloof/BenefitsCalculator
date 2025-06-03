@@ -17,7 +17,7 @@ public class DependentsController(IEmployeesService employeesService) : Controll
         var employee = await employeesService.GetEmployeeAsync(employeeId, cancellationToken);
         if (employee is null)
             return NotFound("Employee not found");
-        var dependent = employee.Dependents.SingleOrDefault(e => e.Id == id);
+        var dependent = employee.Dependents.FirstOrDefault(e => e.Id == id);
         if (dependent is null)
             return NotFound($"Employee {employeeId}'s dependent {id} not found");
         return Ok(new ApiResponse<GetDependentDto>

@@ -13,10 +13,7 @@ public class EmployeesContextSeed : IDbSeeder<EmployeesDbContext>
 {
     public async Task SeedAsync(EmployeesDbContext context)
     {
-        if (!context.Employees.Any())
-        {
-            context.Dependents.RemoveRange(context.Dependents);
-            context.Employees.AddRange(new List<Employee>
+        context.Employees.AddRange(new List<Employee>
             {
                 new Employee() {
                     Id=1,
@@ -72,7 +69,6 @@ public class EmployeesContextSeed : IDbSeeder<EmployeesDbContext>
                     }
                 }
             });
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
     }
 }

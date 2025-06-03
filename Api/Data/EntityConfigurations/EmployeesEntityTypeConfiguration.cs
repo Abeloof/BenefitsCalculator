@@ -1,7 +1,8 @@
+using Api.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Data.Entities.EntityConfigurations;
+namespace Api.Data.EntityConfigurations;
 
 class EmployeesEntityTypeConfiguration : IEntityTypeConfiguration<Employee>
 {

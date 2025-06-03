@@ -1,5 +1,5 @@
 using Api.Data.Entities;
-using Api.Data.Entities.EntityConfigurations;
+using Api.Data.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Data;

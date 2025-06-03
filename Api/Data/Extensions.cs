@@ -28,7 +28,7 @@ public static class Extensions
 }
 
 
-public class EmployeesContextMigrationHostedService<TContext, TDbSeeder>(IServiceProvider serviceProvider, IWebHostEnvironment env)
+public class EmployeesContextMigrationHostedService<TContext, TDbSeeder>(IServiceProvider serviceProvider, IHostEnvironment env)
     : BackgroundService where TContext : DbContext
                         where TDbSeeder : class, IDbSeeder<TContext>
 {
@@ -45,9 +45,14 @@ public class EmployeesContextMigrationHostedService<TContext, TDbSeeder>(IServic
             var strategy = context.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
             {
-                await context.Database.MigrateAsync();
-                if(!env.IsProduction())
+                if(env.IsProduction())
+                    await context.Database.MigrateAsync();
+                if (!env.IsProduction())
+                {
+                    await context.Database.EnsureDeletedAsync();
+                    await context.Database.MigrateAsync();
                     await seeder.SeedAsync(context);
+                }
             });
         }
         catch (Exception)

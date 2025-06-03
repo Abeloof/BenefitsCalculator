@@ -11,7 +11,9 @@ services:
       - 3000:3000
     networks:
       apps:
-        ipv4_address: 172.20.0.2  
+        ipv4_address: 172.20.0.2
+    depends_on:
+      - db
           
   db:
     image: postgres:14.3
@@ -27,7 +29,6 @@ services:
     networks:
       apps:
         aliases:
-          - database
           - postgres
         ipv4_address: 172.20.0.3
 
