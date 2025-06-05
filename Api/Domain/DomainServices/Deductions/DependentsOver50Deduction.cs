@@ -1,11 +1,13 @@
 using Api.Domain.Dtos.Earnings;
 using Api.Domain.Dtos.Employee;
 using Api.Domain.Interfaces;
+using DurableTask.Core;
 using Microsoft.Extensions.Options;
 
 namespace Api.Domain.DomainServices.Deductions;
 
-public class DependentsOver50Deduction(IOptions<EarningsOptions> options, TimeProvider currentTimeProvider) : IEarningPeriodDeduction
+public class DependentsOver50Deduction(IOptions<EarningsOptions> options, TimeProvider currentTimeProvider) 
+                : TaskActivity<GetEmployeeDto, EarningPeriodDeductionDto?>,IEarningPeriodDeduction
 {
     private int DaysInAYear = DateTime.IsLeapYear(currentTimeProvider.GetLocalNow().Year) ? 366 : 365;
     private const int Age = 50;
@@ -32,5 +34,16 @@ public class DependentsOver50Deduction(IOptions<EarningsOptions> options, TimePr
             Amount = Math.Round(DependentOver50CostPerEarningPeriod * count, 2, MidpointRounding.AwayFromZero),
             Description = string.Format(Description, count, Age)
         };
+    }
+
+    protected override EarningPeriodDeductionDto? Execute(TaskContext context, GetEmployeeDto input)
+    {
+        if (!this.IsDeductable(input))
+            return new EarningPeriodDeductionDto
+            {
+                Amount = 0m,
+                Description = "SKIP"
+            };
+        return this.RetrieveDeduction(input);
     }
 }

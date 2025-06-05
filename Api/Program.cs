@@ -5,6 +5,8 @@ using Api.Domain;
 using Api.Domain.DomainServices;
 using Api.Domain.DomainServices.Deductions;
 using Api.Domain.Interfaces;
+using DurableTask.AzureStorage;
+using DurableTask.Core;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +48,23 @@ builder.Services.AddTransient<IEarningPeriodDeduction, DependentsDeduction>();
 builder.Services.AddTransient<IEarningPeriodDeduction, DependentsOver50Deduction>();
 builder.Services.AddTransient<IEarningPeriodDeduction, EmployedDeduction>();
 builder.Services.AddTransient<IEarningPeriodDeduction, SalaryBasedDeduction>();
+
+builder.Services.AddTransient<EarningsCalulator>();
+builder.Services.AddTransient<DependentsDeduction>();
+builder.Services.AddTransient<DependentsOver50Deduction>();
+builder.Services.AddTransient<EmployedDeduction>();
+builder.Services.AddTransient<SalaryBasedDeduction>();
+
+
+var settings = new AzureStorageOrchestrationServiceSettings
+{
+    StorageAccountClientProvider = new StorageAccountClientProvider(builder.Configuration.GetSection("DurableTask:ConnectionString").Value!),
+    TaskHubName = builder.Configuration.GetSection("DurableTask:taskHubName").Value!
+};
+
+builder.Services.AddSingleton((_) => new AzureStorageOrchestrationService(settings));
+builder.Services.AddTransient((sp) => new TaskHubClient(sp.GetService<AzureStorageOrchestrationService>()!));
+builder.Services.AddHostedService<SimpleTaskHubWorker>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -68,3 +87,36 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+public class SimpleTaskHubWorker : BackgroundService
+{
+    private readonly AzureStorageOrchestrationService azureStorageOrchestrationService;
+    private readonly TaskHubWorker taskHubWorker;
+
+    public SimpleTaskHubWorker(IServiceProvider sp)
+    {
+        azureStorageOrchestrationService
+                    = sp.GetService<AzureStorageOrchestrationService>()!;
+        taskHubWorker = new TaskHubWorker(azureStorageOrchestrationService);
+        var earningCalc = new SimpleObjectCreator<TaskOrchestration>(nameof(EarningsCalulator), sp.GetService<EarningsCalulator>()!);
+        taskHubWorker.AddTaskOrchestrations(earningCalc);
+        taskHubWorker.AddTaskActivities([
+            new SimpleObjectCreator<TaskActivity>(nameof(DependentsDeduction), sp.GetService<DependentsDeduction>()!),
+            new SimpleObjectCreator<TaskActivity>(nameof(DependentsOver50Deduction), sp.GetService<DependentsOver50Deduction>()!),
+            new SimpleObjectCreator<TaskActivity>(nameof(EmployedDeduction), sp.GetService<EmployedDeduction>()!),
+            new SimpleObjectCreator<TaskActivity>(nameof(SalaryBasedDeduction), sp.GetService<SalaryBasedDeduction>()!),
+        ]);
+    }
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await taskHubWorker.StartAsync();
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        taskHubWorker.StopAsync();
+    } 
+}
