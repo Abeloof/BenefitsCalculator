@@ -8,7 +8,7 @@ public class EarningsIntegrationTests : IntegrationTest
     [Fact]
     public async Task WhenAskedFor_EmployeeEarningsForAPayperiod_WithOver80kSalaryAndDependentOver50_ShouldReturnCorrectEarnings()
     {
-        var response = await HttpClient.GetAsync("/api/v1/employees/3/Earnings/1");
+        var response = await HttpClient.GetAsync("/api/v1/employees/3/earnings/1");
         var dependentCost = Math.Round(((600 * 12m) / 26m), 2, MidpointRounding.AwayFromZero);
         var dependentOver50Cost = Math.Round((200 * 12m) / 26m, 2, MidpointRounding.AwayFromZero);
         var employedCost = Math.Round((1000 * 12m) / 26m, 2, MidpointRounding.AwayFromZero);
