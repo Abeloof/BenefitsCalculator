@@ -54,8 +54,10 @@
 				"protocol": "http"
 			}
 	},
-	// TODO: below line could be revised
-	"onCreateCommand": "sudo chown -R vscode:users /vscode/vscode-server && sudo  chmod -R g+rw /vscode/vscode-server && sudo chown -R vscode:users /home/vscode && sudo chmod -R g+rw,u+rw /home/vscode",
+		//note: init is under host ie not container env
+	"initializeCommand": "mkdir -p ${env:HOME}${env:USERPROFILE}/vscode-server ${env:HOME}${env:USERPROFILE}/.vscode-server ${env:HOME}${env:USERPROFILE}/.nuget && sudo chmod -R 777 ${env:HOME}${env:USERPROFILE}/vscode-server ${env:HOME}${env:USERPROFILE}/.vscode-server ${env:HOME}${env:USERPROFILE}/.nuget ${env:HOME}${env:USERPROFILE}/.bash_history ${env:HOME}${env:USERPROFILE}/.bashrc",
+		//note: container env 
+	"updateContentCommand": "sudo chown -R vscode:users /vscode/vscode-server /home/vscode/.vscode-server /home/vscode/.dotnet /home/vscode/.nuget /home/vscode/.bash_history /home/vscode/.bashrc",
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "dotnet dev-certs https --trust && dotnet tool install -g dotnet-ef"
 
